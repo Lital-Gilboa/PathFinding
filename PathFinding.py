@@ -215,51 +215,38 @@ def BFS_algorithm(draw, grid, start, end):  # draw supposed to be a function
             current.make_closed()
 
     return False
-
-def DFS_algorithm(draw, grid, start, end):  # draw supposed to be a function
-    count = 0
-    current = start
-    open_set = PriorityQueue()
-    open_set.put((0, count, start))  # store the: weight, count and the spot(node)
+ended = False
+def DFS_algorithm(draw, grid, start, end):
     came_from = {}  # dict
-    weight = {spot: float("inf") for row in grid for spot in row}
-    weight[start] = 0
+    DFS_algorithm_rec(draw, grid, start, end, came_from)
+    start.make_start()
+    draw()
 
-    open_set_hash = {start}  # help to check if spot is in the open set
+def DFS_algorithm_rec(draw, grid, start, end, came_from):  # draw supposed to be a function
+    current = start
+    current.make_closed()
+    draw()
 
-    while not open_set.empty():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
 
-        current = open_set.get()[2]  # get the spot, the first current is the start node
-        open_set_hash.remove(current)
+    if current == end:
+        # make path
+        reconstruct_path(came_from, end, draw)
+        end.make_end()
+        global ended
+        ended = True
+        return True
 
-        if current == end:
-            # make path
-            reconstruct_path(came_from, end, draw)
-            end.make_end()
-            start.make_start()
-            return True
+    for neighbor in current.neighbors:
+        if(ended):
+            return
+        if not neighbor.is_closed():
+            came_from[neighbor] = current
+            DFS_algorithm_rec(draw, grid, neighbor, end, came_from)
 
-        for neighbor in current.neighbors:
-            temp_weight = weight[current] + 1
-
-            if temp_weight < weight[neighbor]:
-                came_from[neighbor] = current
-                weight[neighbor] = temp_weight
-                if neighbor not in open_set_hash:
-                    count += 1
-                    open_set.put((weight[neighbor], count, neighbor))
-                    open_set_hash.add(neighbor)
-                    neighbor.make_open()
-
-        draw()
-
-        if current != start:
-            current.make_closed()
-
-    return False
+    return
 
 
 
@@ -268,6 +255,8 @@ def algorithm(draw, grid, start, end, algorithm):  # draw supposed to be a funct
         A_star_algorithm(draw, grid, start, end)
     elif(algorithm == BFS_algorithm):
         BFS_algorithm(draw, grid, start, end)
+    elif(algorithm == DFS_algorithm):
+        DFS_algorithm(draw, grid, start, end)
 
 
 def make_grid(rows, width):
@@ -374,7 +363,7 @@ def main(win, width):
                         for spot in row:
                             spot.update_neighbors(grid)
 
-                    algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end, BFS_algorithm)
+                    algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end, DFS_algorithm)
 
                 # clear the screen
                 if event.key == pygame.K_c:
