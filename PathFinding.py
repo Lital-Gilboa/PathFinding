@@ -216,6 +216,51 @@ def BFS_algorithm(draw, grid, start, end):  # draw supposed to be a function
 
     return False
 
+def DFS_algorithm(draw, grid, start, end):  # draw supposed to be a function
+    count = 0
+    current = start
+    open_set = PriorityQueue()
+    open_set.put((0, count, start))  # store the: weight, count and the spot(node)
+    came_from = {}  # dict
+    weight = {spot: float("inf") for row in grid for spot in row}
+    weight[start] = 0
+
+    open_set_hash = {start}  # help to check if spot is in the open set
+
+    while not open_set.empty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        current = open_set.get()[2]  # get the spot, the first current is the start node
+        open_set_hash.remove(current)
+
+        if current == end:
+            # make path
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+            return True
+
+        for neighbor in current.neighbors:
+            temp_weight = weight[current] + 1
+
+            if temp_weight < weight[neighbor]:
+                came_from[neighbor] = current
+                weight[neighbor] = temp_weight
+                if neighbor not in open_set_hash:
+                    count += 1
+                    open_set.put((weight[neighbor], count, neighbor))
+                    open_set_hash.add(neighbor)
+                    neighbor.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+
+    return False
+
 
 
 def algorithm(draw, grid, start, end, algorithm):  # draw supposed to be a function
