@@ -1,6 +1,7 @@
 import pygame
 import math
 from queue import PriorityQueue
+import Algorithms
 
 WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH, WIDTH))  # window
@@ -108,155 +109,14 @@ class Spot:
     def __lt__(self, other):
         return False;
 
-# calculate the absolute distance between point 1 and point 2
-def h(p1, p2):
-    x1, y1 = p1
-    x2, y2 = p2
-    return abs(x1 - x2) + abs(y1 - y2)
 
-
-def reconstruct_path(came_from, current, draw):
-    # when current is start we done, start is not in came_from
-    while current in came_from:
-        current = came_from[current]
-        current.make_path()
-        draw()
-
-
-def A_star_algorithm(draw, grid, start, end):  # draw supposed to be a function
-    count = 0
-    current = start
-    open_set = PriorityQueue()
-    open_set.put((0, count, start))  # store the: f score, count and the spot(node)
-    came_from = {}  # dict
-    g_score = {spot: float("inf") for row in grid for spot in row}
-    g_score[start] = 0
-    f_score = {spot: float("inf") for row in grid for spot in row}
-    f_score[start] = h(start.get_pos(), end.get_pos())  # estimated the distance from start point to end point
-
-    open_set_hash = {start}  # help to check if spot is in the open set
-
-    while not open_set.empty():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-        current = open_set.get()[2]  # get the spot, the first current is the start node
-        open_set_hash.remove(current)
-
-        if current == end:
-            # make path
-            reconstruct_path(came_from, end, draw)
-            end.make_end()
-            start.make_start()
-            return True
-
-        for neighbor in current.neighbors:
-            temp_g_score = g_score[current] + 1
-
-            if temp_g_score < g_score[neighbor]:
-                came_from[neighbor] = current
-                g_score[neighbor] = temp_g_score
-                f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
-                if neighbor not in open_set_hash:
-                    count += 1
-                    open_set.put((f_score[neighbor], count, neighbor))
-                    open_set_hash.add(neighbor)
-                    neighbor.make_open()
-
-        draw()
-
-        if current != start:
-            current.make_closed()
-
-    return False
-
-def BFS_algorithm(draw, grid, start, end):  # draw supposed to be a function
-    count = 0
-    current = start
-    open_set = PriorityQueue()
-    open_set.put((0, count, start))  # store the: weight, count and the spot(node)
-    came_from = {}  # dict
-    weight = {spot: float("inf") for row in grid for spot in row}
-    weight[start] = 0
-
-    open_set_hash = {start}  # help to check if spot is in the open set
-
-    while not open_set.empty():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-        current = open_set.get()[2]  # get the spot, the first current is the start node
-        open_set_hash.remove(current)
-
-        if current == end:
-            # make path
-            reconstruct_path(came_from, end, draw)
-            end.make_end()
-            start.make_start()
-            return True
-
-        for neighbor in current.neighbors:
-            temp_weight = weight[current] + 1
-
-            if temp_weight < weight[neighbor]:
-                came_from[neighbor] = current
-                weight[neighbor] = temp_weight
-                if neighbor not in open_set_hash:
-                    count += 1
-                    open_set.put((weight[neighbor], count, neighbor))
-                    open_set_hash.add(neighbor)
-                    neighbor.make_open()
-
-        draw()
-
-        if current != start:
-            current.make_closed()
-
-    return False
-ended = False
-def DFS_algorithm(draw, grid, start, end):
-    came_from = {}  # dict
-    DFS_algorithm_rec(draw, grid, start, end, came_from)
-    start.make_start()
-    draw()
-
-def DFS_algorithm_rec(draw, grid, start, end, came_from):  # draw supposed to be a function
-    current = start
-    current.make_closed()
-    draw()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-
-    if current == end:
-        # make path
-        reconstruct_path(came_from, end, draw)
-        end.make_end()
-        global ended
-        ended = True
-        return True
-
-    for neighbor in current.neighbors:
-        if(ended):
-            return
-        if not neighbor.is_closed():
-            came_from[neighbor] = current
-            DFS_algorithm_rec(draw, grid, neighbor, end, came_from)
-
-    return
-
-
-
-def algorithm(draw, grid, start, end, algorithm):  # draw supposed to be a function
-    if(algorithm == A_star_algorithm):
-        A_star_algorithm(draw, grid, start, end)
-    elif(algorithm == BFS_algorithm):
-        BFS_algorithm(draw, grid, start, end)
-    elif(algorithm == DFS_algorithm):
-        DFS_algorithm(draw, grid, start, end)
+def run_algorithm(algorithm):  # draw supposed to be a function
+    if(algorithm.name == "A_star_algorithm"):
+        algorithm.A_star_algorithm()
+    elif(algorithm.name == "BFS_algorithm"):
+        algorithm.BFS_algorithm()
+    elif(algorithm.name == "DFS_algorithm"):
+        algorithm.DFS_algorithm()
 
 
 def make_grid(rows, width):
@@ -363,7 +223,9 @@ def main(win, width):
                         for spot in row:
                             spot.update_neighbors(grid)
 
-                    algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end, DFS_algorithm)
+
+                    algorithm = Algorithms.Algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end, "DFS_algorithm")
+                    run_algorithm(algorithm)
 
                 # clear the screen
                 if event.key == pygame.K_c:
