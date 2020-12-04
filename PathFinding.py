@@ -36,6 +36,8 @@ class Spot:
         self.width = width
         self.total_rows = total_rows
 
+        self.is_markes = False
+
     # indexing spot using row and col
     def get_pos(self):
         return self.row, self.col
@@ -111,13 +113,7 @@ class Spot:
 
 
 def run_algorithm(algorithm):  # draw supposed to be a function
-    if(algorithm.name == "A_star_algorithm"):
-        algorithm.A_star_algorithm()
-    elif(algorithm.name == "BFS_algorithm"):
-        algorithm.BFS_algorithm()
-    elif(algorithm.name == "DFS_algorithm"):
-        algorithm.DFS_algorithm()
-
+    algorithm.execute_callback(algorithm.name)
 
 def make_grid(rows, width):
     grid = []
@@ -223,8 +219,7 @@ def main(win, width):
                         for spot in row:
                             spot.update_neighbors(grid)
 
-
-                    algorithm = Algorithms.Algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end, "DFS_algorithm")
+                    algorithm = Algorithms.Algorithm(WIN, lambda: draw(win, grid, ROWS, width), grid, start, end, "BFS_algorithm")
                     run_algorithm(algorithm)
 
                 # clear the screen

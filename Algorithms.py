@@ -2,15 +2,17 @@ import pygame
 import math
 from queue import PriorityQueue
 import sys
+from queue import Queue
 
 class Algorithm():
-    def __init__(self, draw, grid, start, end, name):
+    def __init__(self, win, draw, grid, start, end, name):  # draw supposed to be a function
         self.draw = draw
         self.grid = grid
         self.start = start
         self.end = end
         self.name = name
         self.ended = False
+        self.win = win
         sys.setrecursionlimit(2500)
 
 
@@ -21,7 +23,7 @@ class Algorithm():
             current.make_path()
             self.draw()
 
-    def A_star_algorithm(self):  # draw supposed to be a function
+    def A_star_algorithm(self):
         count = 0
         current = self.start
         open_set = PriorityQueue()
@@ -69,25 +71,20 @@ class Algorithm():
 
         return False
 
-
     def BFS_algorithm(self):  # draw supposed to be a function
-        count = 0
         current = self.start
-        open_set = PriorityQueue()
-        open_set.put((0, count, self.start))  # store the: weight, count and the spot(node)
+        open_set = [] # Queue
+        open_set.append(self.start)  # store the: weight, count and the spot(node)
         came_from = {}  # dict
-        weight = {spot: float("inf") for row in self.grid for spot in row}
-        weight[self.start] = 0
+        distance = {spot: float("inf") for row in self.grid for spot in row}
+        distance[self.start] = 0
 
-        open_set_hash = {self.start}  # help to check if spot is in the open set
-
-        while not open_set.empty():
+        while len(open_set) != 0:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
 
-            current = open_set.get()[2]  # get the spot, the first current is the start node
-            open_set_hash.remove(current)
+            current = open_set.pop(0)  # get the spot, the first current is the start node
 
             if current == self.end:
                 # make path
@@ -97,21 +94,18 @@ class Algorithm():
                 return True
 
             for neighbor in current.neighbors:
-                temp_weight = weight[current] + 1
-
-                if temp_weight < weight[neighbor]:
+                if not neighbor.is_closed() and not neighbor.is_open() and not neighbor.is_start():
+                    open_set.append(neighbor)
+                    neighbor.make_open()
+                    distance[neighbor] = distance[current] + 1
                     came_from[neighbor] = current
-                    weight[neighbor] = temp_weight
-                    if neighbor not in open_set_hash:
-                        count += 1
-                        open_set.put((weight[neighbor], count, neighbor))
-                        open_set_hash.add(neighbor)
-                        neighbor.make_open()
+                    #neighbor.draw(self.win)
 
             self.draw()
 
-            if current != self.start:
+            if current != self.start and current != self.end:
                 current.make_closed()
+                current.draw(self.win)
 
         return False
 
@@ -145,6 +139,55 @@ class Algorithm():
                 self.DFS_algorithm_rec(draw, grid, neighbor, end, came_from)
 
         return
+
+    def Dijkstra_algorithm(self):
+        count = 0
+        current = self.start
+        open_set = PriorityQueue()
+        open_set.put((0, count, self.start))
+        came_from = {}  # dict
+        distance = {spot: float("inf") for row in self.grid for spot in row}
+        distance[self.start] = 0
+
+
+        open_set_hash = {self.start}  # help to check if spot is in the open set
+
+        while not open_set.empty():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+            current = open_set.get()[2]  # get the spot, the first current is the start node
+            open_set_hash.remove(current)
+
+            if current == self.end:
+                # make path
+                reconstruct_path(came_from, current, self.draw)
+                self.end.make_end()
+                self.start.make_start()
+                return True
+
+            for neighbor in current.neighbors:
+                temp_d = distance[current] + 1
+
+                if temp_d < distance[neighbor]:
+                    came_from[neighbor] = current
+                    distance[neighbor] = temp_d
+                    if neighbor not in open_set_hash:
+                        count += 1
+                        open_set.put((distance[neighbor], count, neighbor))
+                        open_set_hash.add(neighbor)
+                        neighbor.make_open()
+
+            self.draw()
+
+            if current != self.start:
+                current.make_closed()
+
+        return False
+
+    def execute_callback(self, algorithm):
+        getattr(self, algorithm)()
 
 
 # calculate the absolute distance between point 1 and point 2
