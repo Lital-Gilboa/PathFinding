@@ -4,6 +4,7 @@ from queue import PriorityQueue
 import sys
 from queue import Queue
 
+
 class Algorithm():
     def __init__(self, win, draw, grid, start, end, name):  # draw supposed to be a function
         self.draw = draw
@@ -23,7 +24,7 @@ class Algorithm():
             current.make_path()
             self.draw()
 
-    def A_star_algorithm(self):
+    def A_star(self):
         count = 0
         current = self.start
         open_set = PriorityQueue()
@@ -71,7 +72,7 @@ class Algorithm():
 
         return False
 
-    def BFS_algorithm(self):  # draw supposed to be a function
+    def BFS(self):  # draw supposed to be a function
         current = self.start
         open_set = [] # Queue
         open_set.append(self.start)  # store the: weight, count and the spot(node)
@@ -109,13 +110,13 @@ class Algorithm():
 
         return False
 
-    def DFS_algorithm(self):
+    def DFS(self):
         came_from = {}  # dict
         self.DFS_algorithm_rec(self.draw, self.grid, self.start, self.end, came_from)
         self.start.make_start()
         self.draw()
 
-    def DFS_algorithm_rec(self, draw, grid, start, end, came_from):  # draw supposed to be a function
+    def DFS_rec(self, draw, grid, start, end, came_from):  # draw supposed to be a function
         current = start
         current.make_closed()
         self.draw()
@@ -140,7 +141,7 @@ class Algorithm():
 
         return
 
-    def Dijkstra_algorithm(self):
+    def Dijkstra(self):
         count = 0
         current = self.start
         open_set = PriorityQueue()

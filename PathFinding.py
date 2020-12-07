@@ -2,6 +2,7 @@ import pygame
 import math
 from queue import PriorityQueue
 import Algorithms
+import argparse
 
 WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH, WIDTH))  # window
@@ -219,7 +220,27 @@ def main(win, width):
                         for spot in row:
                             spot.update_neighbors(grid)
 
-                    algorithm = Algorithms.Algorithm(WIN, lambda: draw(win, grid, ROWS, width), grid, start, end, "BFS_algorithm")
+                    parser = argparse.ArgumentParser()
+                    parser.add_argument("algorithm_name", help="please choose a algorithm : A_star, BFS, DFS, Dijkstra")
+                    args = parser.parse_args()
+                    correct = False
+                    while(not correct):
+                        if(args.algorithm_name == "A_star"):
+                            correct = True
+                            name = args.algorithm_name
+                        elif(args.algorithm_name == "BFS"):
+                            correct = True
+                            name = args.algorithm_name
+                        elif(args.algorithm_name == "DFS"):
+                            correct = True
+                            name = args.algorithm_name
+                        elif(args.algorithm_name == "Dijkstra"):
+                            correct = True
+                            name = args.algorithm_name
+                        else:
+                            parser.add_argument("algorithm_name", help="please choose a correct algorithm")
+
+                    algorithm = Algorithms.Algorithm(WIN, lambda: draw(win, grid, ROWS, width), grid, start, end, name)
                     run_algorithm(algorithm)
 
                 # clear the screen
