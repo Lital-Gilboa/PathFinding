@@ -1,9 +1,9 @@
-# Path Finding - 
+# Pathfinding Visualizer - 
 
 KEYS:  
-Left mouse click = the first click marks the START point, the second click marks the END point and every following click is a barrier  
-Right mouse click = clear this point    
-SPACE = RUN the algorithm     
+- Left mouse click = the first click marks the START point, the second click marks the END point and every following click is a barrier  
+- Right mouse click = clear this point    
+- SPACE = RUN the algorithm     
 
 
 ## A* algorithm
