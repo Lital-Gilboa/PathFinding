@@ -221,7 +221,7 @@ def main(win, width):
                             spot.update_neighbors(grid)
 
                     parser = argparse.ArgumentParser()
-                    parser.add_argument("algorithm_name", help="please choose a algorithm : A_star, BFS, DFS, Dijkstra")
+                    parser.add_argument("-algorithm_name", default='A_star',  help="please choose a algorithm : A_star, BFS, DFS, Dijkstra")
                     args = parser.parse_args()
                     correct = False
                     while(not correct):
@@ -238,7 +238,8 @@ def main(win, width):
                             correct = True
                             name = args.algorithm_name
                         else:
-                            parser.add_argument("algorithm_name", help="please choose a correct algorithm")
+                            parser.add_argument("-algorithm_name", default='A_star', help="please choose a correct algorithm")
+                            print("Wrong input, default algorithm is running - A_star")
 
                     algorithm = Algorithms.Algorithm(WIN, lambda: draw(win, grid, ROWS, width), grid, start, end, name)
                     run_algorithm(algorithm)
