@@ -1,4 +1,6 @@
 # Pathfinding Visualizer - 
+  
+Welcome! I decided to do this project because I LOVE ALGORITHMS! Algorithms are highly relevant to real world problems. And solving this kind of problems require creativity and effort. In particular, I find Pathfinding algorithms very interesting. In this PathFinding Visualizer you can visualize the following algorithms: Astar, BFS, DFS and Dikstra.
 
 KEYS:  
 - Left mouse click = the first click marks the START point, the second click marks the END point and every following click is a barrier  
