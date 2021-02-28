@@ -1,8 +1,6 @@
 import pygame
-import math
 from queue import PriorityQueue
 import sys
-from queue import Queue
 
 
 class Algorithm():
@@ -15,7 +13,6 @@ class Algorithm():
         self.ended = False
         self.win = win
         sys.setrecursionlimit(2500)
-
 
     def reconstruct_path(self, came_from, current):
         # when current is start we done, start is not in came_from
@@ -112,7 +109,29 @@ class Algorithm():
 
     def DFS(self):
         came_from = {}  # dict
-        self.DFS_algorithm_rec(self.draw, self.grid, self.start, self.end, came_from)
+        #self.DFS_algorithm_rec(self.draw, self.grid, self.start, self.end, came_from)
+        current = self.start
+        current.make_closed()
+        self.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        if current == self.end:
+            # make path
+            reconstruct_path(came_from, self.end, self.draw)
+            self.end.make_end()
+            self.ended = True
+            return True
+
+        for neighbor in current.neighbors:
+            if (self.ended):
+                return
+            if not neighbor.is_closed():
+                came_from[neighbor] = current
+                self.DFS()
+        
         self.start.make_start()
         self.draw()
 
