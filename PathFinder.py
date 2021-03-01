@@ -106,7 +106,7 @@ class PathFinder():
         parser = argparse.ArgumentParser()
         parser.add_argument("-algorithm_name", default='A_star', choices=['A_star', 'DFS', 'BFS', 'Dijkstra'],  help="please choose a algorithm : A_star, BFS, DFS, Dijkstra")
         parser.add_argument("-rows", default=50, type=int, help="")
-        parser.add_argument("-width", default=800, type=int, help="")
+        parser.add_argument("-width", default=700, type=int, help="")
         self.args = parser.parse_args()
         self.win = pygame.display.set_mode((self.args.width, self.args.width))  # window
         pygame.display.set_caption("Path Finding Algorithms Visualization")

@@ -109,29 +109,12 @@ class Algorithm():
 
     def DFS(self):
         came_from = {}  # dict
-        #self.DFS_algorithm_rec(self.draw, self.grid, self.start, self.end, came_from)
-        current = self.start
-        current.make_closed()
-        self.draw()
+        self.DFS_rec(self.draw, self.grid, self.start, self.end, came_from)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        if current == self.end:
-            # make path
-            reconstruct_path(came_from, self.end, self.draw)
-            self.end.make_end()
-            self.ended = True
-            return True
-
-        for neighbor in current.neighbors:
-            if (self.ended):
-                return
-            if not neighbor.is_closed():
-                came_from[neighbor] = current
-                self.DFS()
-        
         self.start.make_start()
         self.draw()
 
@@ -156,7 +139,7 @@ class Algorithm():
                 return
             if not neighbor.is_closed():
                 came_from[neighbor] = current
-                self.DFS_algorithm_rec(draw, grid, neighbor, end, came_from)
+                self.DFS_rec(draw, grid, neighbor, end, came_from)
 
         return
 
